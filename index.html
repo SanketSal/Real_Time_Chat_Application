@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Real-Time Chat App</title>
+</head>
+<body>
+  <div id="chatContainer">
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Type a message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    const username = prompt('Enter your username:');
+    const room = prompt('Enter the chat room name:');
+
+    socket.emit('join', { username, room });
+
+    socket.on('message', (data) => {
+      const { user, text } = data;
+      const messageDiv = document.createElement('div');
+      messageDiv.textContent = `${user}: ${text}`;
+      document.getElementById('messages').appendChild(messageDiv);
+    });
+
+    function sendMessage() {
+      const message = document.getElementById('messageInput').value;
+      socket.emit('sendMessage', { room, message });
+      document.getElementById('messageInput').value = '';
+    }
+  </script>
+</body>
+</html>
